@@ -1,0 +1,142 @@
+<app-header></app-header>
+<div class="flex">
+    <app-slidemenu></app-slidemenu>
+    <p-tabView>
+        <p-tabPanel>
+            <ng-template pTemplate="header">
+                <i class="pi pi-list"></i>
+                <span class="ml-2">List Account</span>
+            </ng-template>
+            <div style="width: 1200px; min-height: 522px;">
+                <p-toast></p-toast>
+                <p-table #dt [value]="listAccount" [rows]="10" [paginator]="true"
+                    [globalFilterFields]="['fullname','username']" [rowHover]="true" dataKey="id"
+                    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                    [showCurrentPageReport]="true">
+                    <ng-template pTemplate="caption">
+                        <div class="flex place-content-between items-center">
+                            <h1 class="text-3xl m-0">Manage Accounts </h1>
+                            <span class="p-input-icon-left ">
+                                <i class="pi pi-search"></i>
+                                <input style="width: 500px; border-radius: 10px;" pInputText type="text"
+                                    (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+                                    placeholder="Search..." />
+                            </span>
+                            <div>
+                                <button pButton pRipple label="New" icon="pi pi-plus" class="p-button-success"
+                                    style="margin-right: 10px;" (click)="openNew()"></button>
+                            </div>
+                        </div>
+                    </ng-template>
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th>No</th>
+                            <th pSortableColumn="fullname">Name <p-sortIcon field="fullname"></p-sortIcon>
+                            </th>
+                            <th pSortableColumn="username">User Name <p-sortIcon field="username"></p-sortIcon>
+                            </th>
+                            <th pSortableColumn="totalDayWorking">Total Day Working<p-sortIcon field="totalDayWorking">
+                                </p-sortIcon>
+                            </th>
+                            <th pSortableColumn="isDeleted">Status<p-sortIcon field="isDeleted">
+                            </p-sortIcon>
+                        </th>
+                            <th>Action</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-account>
+                        <tr>
+                            <td>{{listAccount.indexOf(account) + 1}}</td>
+                            <td class="overflow-ellipsis overflow-hidden whitespace-nowrap">{{account.fullname}}</td>
+                            <td class="overflow-ellipsis overflow-hidden whitespace-nowrap">{{account.username}}</td>
+                            <td>{{account.totalDayWorking}}</td>
+                            <td>{{account.isDeleted ? "Deactive" : "Active"}}</td>
+                            <td>
+                                <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success"
+                                    (click)="editAccount(account)"></button>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+        </p-tabPanel>
+        <p-tabPanel>
+            <ng-template pTemplate="header">
+                <i class="pi pi-book"></i>
+                <span class="ml-2">The Accounts are being required</span>
+            </ng-template>
+            <div style="width: 1200px; min-height: 522px;">
+                <p-toast></p-toast>
+                <p-table #dt [value]="listAccountRequired" [rows]="10" [paginator]="true"
+                    [globalFilterFields]="['email,fullname']" [rowHover]="true"
+                    dataKey="id" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                    [showCurrentPageReport]="true">
+                    <ng-template pTemplate="caption">
+                        <div class="flex place-content-between items-center">
+                            <h1 class="text-3xl m-0">Register Required</h1>
+                            <span class="p-input-icon-left ">
+                                <i class="pi pi-search"></i>
+                                <input style="width: 500px; border-radius: 10px;" pInputText type="text"
+                                    (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+                                    placeholder="Search..." />
+                            </span>
+                        </div>
+                    </ng-template>
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th>No</th>
+                            <th pSortableColumn="email">User Name<p-sortIcon field="email"></p-sortIcon>
+                            </th>
+                            <th pSortableColumn="fullname">User Name<p-sortIcon field="fullname"></p-sortIcon>
+                            </th>
+                            <th>Action</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-accountRequired>
+                        <tr>
+                            <td>{{listAccountRequired.indexOf(accountRequired) + 1 }}</td>
+                            <td>{{accountRequired.email}}</td>
+                            <td>{{accountRequired.fullname}}</td>
+                            <td>
+                                <button pButton pRipple icon="pi pi-check" class="p-button-rounded p-button-success"
+                                    style="margin-right: 5px;" (click)="acceptRequire(accountRequired)"></button>
+                                <button pButton pRipple icon="pi pi-times" class="p-button-rounded p-button-danger"
+                                    (click)="rejectRequire(accountRequired)"></button>
+                            </td>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="summary">
+                        <div class="flex">
+                            <!-- In total there are {{products ? products.length : 0 }} products. -->
+                        </div>
+                    </ng-template>
+                </p-table>
+                <p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
+            </div>
+        </p-tabPanel>
+    </p-tabView>
+</div>
+
+
+<p-dialog [(visible)]="accountDialog" [style]="{width: '450px'}" header="Create New Employee" [modal]="true"
+    styleClass="p-fluid">
+    <ng-template pTemplate="content">
+        <div class="p-field">
+            <label for="username">Email</label>
+            <input disabled="isEdit" type="text" pInputText id="username" [(ngModel)]="account.username" required autofocus />
+            <small class="p-invalid" *ngIf="submitted && !account.username">Username is required.</small>
+        </div>
+        <div *ngIf="isEdit" class="flex mt-5">
+            <label for="username">Deactive</label>
+            <p-inputSwitch class="ml-3" [(ngModel)]="account.isDeleted"></p-inputSwitch>
+        </div>
+
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-danger"
+            (click)="hideDialog()"></button>
+        <button pButton pRipple label="Save" icon="pi pi-check" (click)="saveAccount()"></button>
+    </ng-template>
+</p-dialog>
+<app-footer></app-footer>

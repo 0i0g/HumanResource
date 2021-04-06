@@ -1,0 +1,12 @@
+<div class="items-center justify-items-center px-32 h-12 flex w-full bg-gray-900 text-white">
+    <div class="w-2/3">
+        <h1 (click)="goToHome()"
+            class="cursor-pointer w-80 px-3 py-2 text-xl mx-16 bg-gray-700 text-gray-200 shadow-inner font-bold">
+            Employee Management
+            System</h1>
+    </div>
+    <div class="ml-28 flex w-1/3">
+        <button type="button" pButton icon="pi pi-user" label="{{userName}}" (click)="menu.toggle($event)"></button>
+        <p-menu #menu [popup]="true" [model]="items"></p-menu>
+    </div>
+</div>

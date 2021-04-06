@@ -1,0 +1,97 @@
+<app-header></app-header>
+<div class="flex">
+    <app-slidemenu></app-slidemenu>
+    <div style="width: 1200px; min-height: 522px;" class="mx-auto my-4 rounded-3xl">
+        <p-toast></p-toast>
+        <p-table #dt [value]="listRequest" [rows]="10" [paginator]="true"
+            [globalFilterFields]="['user.username']"
+            [(selection)]="selectedRequests" [rowHover]="true" dataKey="id"
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+            [showCurrentPageReport]="true">
+            <ng-template pTemplate="caption">
+                <div class="flex place-content-between items-center">
+                    <h1 class="text-3xl m-0">Manage Requests</h1>
+                    <span class="p-input-icon-left ">
+                        <i class="pi pi-search"></i>
+                        <input style="width: 500px; border-radius: 10px;" pInputText type="text"
+                            (input)="dt.filterGlobal($any($event.target).value, 'contains')" placeholder="Search..." />
+                    </span>
+                </div>
+            </ng-template>
+            <ng-template pTemplate="header">
+                <tr>
+                    <th class="w-1/12">No</th>
+                    <th class="w-2/12" pSortableColumn="user.username"> User Name<p-sortIcon field="user.username">
+                        </p-sortIcon>
+                    </th>
+                    <th class="w-2/12" pSortableColumn="{{typeOfRequest}}">Type Of Request<p-sortIcon
+                            field="{{typeOfRequest}}"></p-sortIcon>
+                    </th>
+                    <th class="w-2/12" pSortableColumn="fromDate">Start Date <p-sortIcon field="fromDate"></p-sortIcon>
+                    </th>
+                    <th class="w-2/12" pSortableColumn="toDate">End Date <p-sortIcon field="toDate"></p-sortIcon>
+                    </th>
+                    <th class="w-1/12" pSortableColumn="timeOT">TimeOT<p-sortIcon field="timeOT"></p-sortIcon>
+                    </th>
+                    <th class="w-1/12" pSortableColumn="status">Status<p-sortIcon field="status"></p-sortIcon>
+                    </th>
+                    <th class="w-1/12">Action</th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-request>
+                <tr>
+                    <td>{{listRequest.indexOf(request) + 1}}</td>
+                    <td>{{request.user.username}}</td>
+                    <td>{{request.timeOT ? typeOfRequest[0] : typeOfRequest[1] }}</td>
+                    <td>{{request.fromDate | date}}</td>
+                    <td>{{request.toDate | date}}</td>
+                    <td>{{request.timeOT ? request.timeOT : ""}}</td>
+                    <td class="uppercase">{{request.status}}</td>
+                    <td>
+                        <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success"
+                            style="margin-right: 5px;" (click)="editProduct(request)"></button>
+                    </td>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="summary">
+                <div class="flex">
+                    <!-- In total there are {{products ? products.length : 0 }} products. -->
+                </div>
+            </ng-template>
+        </p-table>
+        <p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
+    </div>
+</div>
+<p-dialog [(visible)]="requestDialog" [style]="{width: '450px'}" header="Request Details" [modal]="true"
+    styleClass="p-fluid">
+    <ng-template pTemplate="content">
+        <div class="py-3">
+            <label class="w-1/3">User Name</label>
+            <input class="float-right" type="text" disabled [(ngModel)]="request.user.username" />
+        </div>
+        <div class="py-3">
+            <label class="w-1/3">Type Of Request</label>
+            <input class="float-right" type="text" disabled [(ngModel)]="request.timeOT? typeOfRequest[0]:typeOfRequest[1]" />
+        </div>
+        <div class="py-3">
+            <label>Start Date</label>
+            <input class="float-right" disabled [(ngModel)]="request.fromDate" />
+        </div>
+        <div class="py-3">
+            <label class="w-1/3">End Date</label>
+            <input class="float-right" disabled [(ngModel)]="request.toDate" />
+        </div>
+        <div class="py-3">
+            <label class="mb-5 w-1/3" for="status">Status</label>
+            <p-dropdown class="overflow-visible uppercase" [options]="listStatus" ngDefaultControl [(ngModel)]="request.status" placeholder="{{request.status}}"
+            optionLabel="name" [showClear]="true"></p-dropdown>
+        </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-danger"
+            (click)="hideDialog()"></button>
+        <button pButton pRipple label="Save" icon="pi pi-check" (click)="saveProduct()"></button>
+    </ng-template>
+</p-dialog>
+<app-footer></app-footer>

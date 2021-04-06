@@ -1,0 +1,15 @@
+<body>
+<div class="login">
+  <div class="rounded-2xl">
+    <img class="w-80 h-72 bg-ga my-0 mx-auto" src="../../../assets/img/login.png">
+  </div>
+  <div class="login-triangle"></div>
+  <h2 class="login-header">Employee Management System</h2>
+  <form class="login-container">
+    <div class="text-center text-red-600 text-base" *ngIf="isError" id="errorLine">{{errorMessage}}</div>
+    <p><input #username required="required" type="text" placeholder="UserName"></p>
+    <p><input #password required="required" type="password" placeholder="Password"></p>
+    <p><input (click)="onSummit(username.value,password.value)" value="Log in" type="button"></p>
+  </form>
+</div>
+</body>

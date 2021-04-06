@@ -1,0 +1,17 @@
+:host ::ng-deep .p-button {
+    background: transparent !important;
+    border: transparent;
+}
+:host ::ng-deep  .p-button:focus {
+    box-shadow: none;
+}
+:host ::ng-deep .p-button:enabled:hover {
+    background: #a5a5a8;
+}
+:host ::ng-deep .p-menu.p-menu-overlay {
+    margin-top: 3px;
+    width: 150px;
+}
+:host ::ng-deep .p-menu .p-submenu-header {
+    display: none;
+}

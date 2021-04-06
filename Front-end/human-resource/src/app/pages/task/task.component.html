@@ -1,0 +1,122 @@
+<app-header></app-header>
+<div class="flex">
+    <app-slidemenu></app-slidemenu>
+    <div style="width: 1200px; min-height: 522px;" class="mx-auto my-4 rounded-3xl">
+        <p-toast></p-toast>
+        <p-table #dt [value]="listTask" [rows]="10" [paginator]="true"
+            [globalFilterFields]="['title']" [(selection)]="selectedTasks"
+            [rowHover]="true" dataKey="id"
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+            [showCurrentPageReport]="true">
+            <ng-template pTemplate="caption">
+                <div class="flex place-content-between items-center">
+                    <h1 class="text-3xl m-0">Manage Tasks </h1>
+                    <span class="p-input-icon-left ">
+                        <i class="pi pi-search"></i>
+                        <input style="width: 500px; border-radius: 10px;" pInputText type="text"
+                            (input)="dt.filterGlobal($event.target.value, 'contains')" placeholder="Search..." />
+                    </span>
+                    <div>
+                        <button pButton pRipple label="New" icon="pi pi-plus" class="p-button-success"
+                            style="margin-right: 10px;" (click)="openNew()" pTooltip="Create New Task" tooltipPosition="top"></button>
+                    </div>
+                </div>
+            </ng-template>
+            <ng-template pTemplate="header">
+                <tr>
+                    <th class="w-1/12">No</th>
+                    <th class="w-2/12" pSortableColumn="title">Title<p-sortIcon field="title"></p-sortIcon>
+                    </th>
+                    <th class="w-2/12" pSortableColumn="description">Description<p-sortIcon field="description"></p-sortIcon>
+                    </th>
+                    <th class="w-32" pSortableColumn="priority">Priority<p-sortIcon field="priority"></p-sortIcon>
+                    </th>
+                    <th class="w-32" pSortableColumn="process">Process<p-sortIcon field="process"></p-sortIcon>
+                    </th>
+                    <th class="w-32" pSortableColumn="status">Status<p-sortIcon field="status"></p-sortIcon>
+                    </th>
+                    <th class="w-2/12" pSortableColumn="assignee.name">Assignee<p-sortIcon field="assignee.name"></p-sortIcon>
+                    </th>
+                    <th class="w-2/12">Action</th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-task>
+                <tr>
+                    <td>{{listTask.indexOf(task) + 1}}</td>
+                    <td class="overflow-ellipsis overflow-hidden whitespace-nowrap">{{task.title}}</td>
+                    <td class="overflow-ellipsis overflow-hidden whitespace-nowrap">{{task.description}}</td>
+                    <td>{{task.priority}}</td>
+                    <td>{{task.process}}%</td>
+                    <td><span class="uppercase">{{task.status}}</span></td>
+                    <td class="overflow-ellipsis overflow-hidden whitespace-nowrap">{{task.assignee?.username}}</td>
+                    <td>
+                        <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success"
+                            style="margin-right: 5px;" (click)="editProduct(task)" pTooltip="Edit Task" tooltipPosition="top"></button>
+                        <button pButton pRipple icon="pi pi-arrow-circle-right" class="p-button-rounded p-button-info"
+                            style="margin-right: 5px;" (click)="openAssignDialog(task)" pTooltip="Assign Task" tooltipPosition="top"></button>
+                        <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning"
+                            (click)="deleteProduct(task)" pTooltip="Delete Task" tooltipPosition="top"></button>
+                    </td>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="summary">
+                <div class="flex">
+                    <!-- In total there are {{products ? products.length : 0 }} products. -->
+                </div>
+            </ng-template>
+        </p-table>
+        <p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
+    </div>
+</div>
+<p-dialog [(visible)]="taskDialog" class="h-96" [style]="{width: '450px'}" header="Task" [modal]="true" styleClass="p-fluid">
+    <ng-template pTemplate="content">
+        <div class="p-field">
+            <label for="name">Title</label>
+            <input type="text" pInputText id="name" [(ngModel)]="task.title" required autofocus />
+            <small class="p-invalid" *ngIf="submitted && !task.title">
+                <Title></Title> <a class="text-red-600">This field is required.</a>
+            </small>
+        </div>
+        <div *ngIf="isEdit" class="p-field">
+            <label for="status">Status</label>
+            <p-dropdown class="uppercase" [options]="listStatusTask" ngDefaultControl [(ngModel)]="task.status" placeholder="{{task.status}}"
+            optionLabel="name" [showClear]="true"></p-dropdown>
+        </div>
+        
+        <div class="p-formgrid p-grid">
+            <div class="p-field p-col">
+                <label for="priority">Priority</label>
+                <p-inputNumber id="priority" [(ngModel)]="task.priority">
+                </p-inputNumber>
+            </div>
+            <div class="p-field p-col">
+                <label for="description">Description</label>
+                <textarea id="description" pInputTextarea [(ngModel)]="task.description" required rows="3"
+                    cols="20"></textarea>
+            </div>
+        </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Save" icon="pi pi-check" (click)="saveProduct()"></button>
+        <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-danger"
+            (click)="hideDialog()"></button>
+    </ng-template>
+</p-dialog>
+<p-dialog [(visible)]="assignDialog" [style]="{width: '450px'}" header="Assign Task" [modal]="true"
+    styleClass="p-fluid">
+    
+    <ng-template pTemplate="content">
+        <div class="p-field" style="height: 250px;">
+            <h1 class="justify-center pb-5">Choose a Employee</h1>
+            <p-dropdown [options]="listUser" ngDefaultControl [(ngModel)]="user" placeholder="Select a Employee"
+                optionLabel="name" [showClear]="true"></p-dropdown>
+        </div>
+    </ng-template>
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Assign" icon="pi pi-check" (click)="assignTask(task,user)"></button>
+        <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-danger"
+            (click)="hideDialog()"></button>
+    </ng-template>
+</p-dialog>
+<app-footer></app-footer>

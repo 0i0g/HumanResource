@@ -1,0 +1,144 @@
+<div class="py-3 text-center">
+    <p-button [icon]="activeState[0] ? 'pi pi-minus' : 'pi pi-plus'" (click)="toggle(0)" styleClass="p-button-text"
+        label="Manage System"></p-button>
+    <p-button [icon]="activeState[1] ? 'pi pi-minus' : 'pi pi-plus'" (click)="toggle(1)"
+        styleClass="p-button-text p-ml-2" label="Manage Manager Account"></p-button>
+    <p-button icon="pi pi-sign-out" (click)="onLogOut()"
+        styleClass="p-button-text p-ml-2" label="Sign Out"></p-button>
+</div>
+
+<p-accordion>
+    <p-accordionTab header="Manage System" [(selected)]="activeState[0]">
+        <div class="flex">
+            <div class="h-72 mx-auto my-2 border-gray-300 border-solid border-2 rounded-md">
+                <h5 class="bg-gray-200 font-bold text-base text-center">Create New System</h5>
+                <div class="card">
+                    <div class="mx-2 p-field p-grid py-3">
+                        <label for="name" class="p-col-fixed" style="width:100px">Name</label>
+                        <div class="p-col">
+                            <input #name required="required" type="text" pInputText>
+                        </div>
+                    </div>
+                    <div class="mx-2 p-field p-grid py-3">
+                        <label for="code" class="p-col-fixed" style="width:100px">Code</label>
+                        <div class="p-col">
+                            <input #code required="required" type="text" pInputText>
+                        </div>
+                    </div>
+                    <div class="mx-auto pt-3 text-center pb-1">
+                        <button pButton type="button" label="Submit"
+                            (click)="onClickCreateSystem(name.value,code.value)"></button>
+                    </div>
+                </div>
+            </div>
+            <div class="w-3/4 mx-auto my-2 border-gray-300 border-solid border-2 rounded-md">
+                <p-table #dt [value]="listSystem" [rows]="10" [paginator]="true" [globalFilterFields]="['name']"
+                    [rowHover]="true" dataKey="id"
+                    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                    [showCurrentPageReport]="true">
+                    <ng-template pTemplate="caption">
+                        <div class="flex place-content-between items-center">
+                            <h1 class="text-3xl m-0">List System</h1>
+                            <span class="p-input-icon-left ">
+                                <i class="pi pi-search"></i>
+                                <input style="width: 500px; border-radius: 10px;" pInputText type="text"
+                                    (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+                                    placeholder="Search..." />
+                            </span>
+                        </div>
+                    </ng-template>
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th>No</th>
+                            <th pSortableColumn="code">Code <p-sortIcon field="code"></p-sortIcon>
+                            </th>
+                            <th pSortableColumn="name">Name <p-sortIcon field="name"></p-sortIcon>
+                            </th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-system>
+                        <tr>
+                            <td>{{listSystem.indexOf(system) + 1}}</td>
+                            <td>{{system.code}}</td>
+                            <td>{{system.name}}</td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+        </div>
+    </p-accordionTab>
+    <p-accordionTab header="Manage Manager Accounts" [(selected)]="activeState[1]">
+        <div class="flex">
+            <div class="h-96 mx-auto my-2 border-gray-300 border-solid border-2 rounded-md">
+                <h5 class="bg-gray-200 font-bold text-base text-center">Create Manager Account</h5>
+                <div class="card">
+                    <div class="mx-2 p-field p-grid py-3">
+                        <label class="p-col-fixed" style="width:100px">System</label>
+                        <div class="p-col">
+                            <p-dropdown [options]="listSystem" ngDefaultControl [(ngModel)]="system"
+                                placeholder="Select a Employee" optionLabel="name" [showClear]="true"></p-dropdown>
+                        </div>
+                    </div>
+                    <div class="mx-2 p-field p-grid py-3">
+                        <label class="p-col-fixed" style="width:100px">Email</label>
+                        <div class="p-col">
+                            <input #username required="required" type="text" pInputText>
+                        </div>
+                    </div>
+                    <div class="mx-2 p-field p-grid py-3">
+                        <label class="p-col-fixed" style="width:100px">Role</label>
+                        <div class="p-col">
+                            <p-inputNumber #role required="required"></p-inputNumber>
+                        </div>
+                    </div>
+                    <div class="mx-auto pt-3 text-center pb-1">
+                        <button pButton type="button" label="Submit"
+                            (click)="onClickCreateAccount(system.id,username.value,role.value)"></button>
+                    </div>
+                </div>
+            </div>
+            <div class="w-3/4 mx-auto my-2 border-gray-300 border-solid border-2 rounded-md">
+                <p-table #dtc [value]="listAccount" [rows]="10" [paginator]="true" [globalFilterFields]="['fullname']"
+                    [rowHover]="true" dataKey="id"
+                    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                    [showCurrentPageReport]="true">
+                    <ng-template pTemplate="caption">
+                        <div class="flex place-content-between items-center">
+                            <h1 class="text-3xl m-0">List Manager Account</h1>
+                            <span class="p-input-icon-left ">
+                                <i class="pi pi-search"></i>
+                                <input style="width: 500px; border-radius: 10px;" pInputText type="text"
+                                    (input)="dtc.filterGlobal($event.target.value, 'contains')"
+                                    placeholder="Search..." />
+                            </span>
+                        </div>
+                    </ng-template>
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th>No</th>
+                            <th pSortableColumn="username">User Name<p-sortIcon field="username"></p-sortIcon>
+                            </th>
+                            <th pSortableColumn="fullname">Full Name <p-sortIcon field="fullname"></p-sortIcon>
+                            </th>
+                            <th pSortableColumn="price">Company <p-sortIcon field="price"></p-sortIcon>
+                            </th>
+                            <th pSortableColumn="role">Role<p-sortIcon field="role"></p-sortIcon>
+                            </th>
+
+
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-account>
+                        <tr>
+                            <td>{{listAccount.indexOf(account) + 1}}</td>
+                            <td>{{account.username}}</td>
+                            <td>{{account.fullname}}</td>
+                            <td></td>
+                            <td>{{account.role}}</td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+        </div>
+    </p-accordionTab>
+</p-accordion>
